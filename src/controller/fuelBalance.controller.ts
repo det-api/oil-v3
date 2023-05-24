@@ -31,37 +31,42 @@ export const getFuelBalanceHandler = async (
 ) => {
   try {
     let sDate = req.query.sDate?.toString();
-    if (!sDate ) {
+    if (!sDate) {
       throw new Error("you need date");
     }
-    if(sDate != currentDate){
+    console.log(currentDate);
+    if (sDate != currentDate) {
       throw new Error("you can't get that date");
     }
     let cDate = new Date(sDate);
     let result = await getFuelBalance({ createAt: sDate });
     if (result.length != 0) {
-    fMsg(res, "fuelBalance are here", result);
-    return;
+      fMsg(res, "fuelBalance are here", result);
+      return;
     }
     //before date
     let prevDate = previous(cDate);
+    console.log(prevDate);
     let prevResult = await getFuelBalance({ createAt: prevDate });
-  
-    await Promise.all(
-    prevResult.map(async (ea) => {
-        let obj   = {
-            stationId : '6464e9f1c45b82216ab1db6b',
-            fuelType : ea.fuelType,
-            capacity : ea.capacity,
-            opening :  ea.balance,
-            createAt : sDate
-        } as fuelBalanceDocument
+     await Promise.all(
+      prevResult.map(async (ea) => {
+        let obj = {
+          stationId: "6464e9f1c45b82216ab1db6b",
+          fuelType: ea.fuelType,
+          capacity: ea.capacity,
+          opening: ea.balance,
+          createAt: sDate,
+          nozzles: ea.nozzles,
+        } as fuelBalanceDocument;
 
-        await addFuelBalance(obj)
-    }))
+        // console.log(obj);
 
-    let final = await getFuelBalance({ createAt: sDate });
-   fMsg(res , 'fuelBalance created and find' ,final)
+        await addFuelBalance(obj);
+      })
+    );
+     
+     let final = await getFuelBalance({ createAt: sDate });
+     fMsg(res , 'fuelBalance created and find' ,final)
   } catch (e) {
     next(new Error(e));
   }

@@ -20,7 +20,8 @@ export const checkToken = (payload : string) : any => jwt.verify( payload , secr
 export let previous = (date = new Date())=>{
   let previousDate = new Date();
   previousDate.setDate(date.getDate() - 1);
-  return previousDate;
+  
+  return previousDate.toLocaleDateString(`fr-CA`);
 }
 
 //for response 

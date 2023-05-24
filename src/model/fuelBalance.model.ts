@@ -13,6 +13,7 @@ export interface fuelBalanceDocument extends mongoose.Document {
   testQ: number;
   balance: number;
   createAt: string;
+  nozzles : []
 }
 
 const fuelBalanceSchema = new Schema({

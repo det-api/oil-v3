@@ -5,6 +5,7 @@ import {
   getUser,
   loginUser,
   registerUser,
+  updateUser,
   userAddPermit,
   userAddRole,
   userRemovePermit,
@@ -49,6 +50,19 @@ export const getUserHandler = async (
   try {
     let result = await getUser({ _id: req.body.user[0]._id });
     fMsg(res, "registered users", result);
+  } catch (e) {
+    next(new Error(e));
+  }
+};
+
+export const updateUserHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    let result = await updateUser(req.query, req.body);
+    fMsg(res, "updated user data", result);
   } catch (e) {
     next(new Error(e));
   }

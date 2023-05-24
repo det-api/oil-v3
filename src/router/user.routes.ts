@@ -5,6 +5,7 @@ import {
   getUserHandler,
   loginUserHandler,
   registerUserHandler,
+  updateUserHandler,
   userAddPermitHandler,
   userAddRoleHandler,
   userRemovePermitHandler,
@@ -19,6 +20,15 @@ userRoute.post("/register", registerUserHandler);
 
 //login user
 userRoute.post("/login", loginUserHandler);
+
+//update
+userRoute.patch(
+  "/",
+  validateToken,
+  roleValidator("admin"),
+  hasAnyPermit(["edit"]),
+  updateUserHandler
+);
 
 //getuser
 userRoute.get("/", validateToken, getUserHandler);

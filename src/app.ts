@@ -52,7 +52,6 @@ app.use("/api/station-detail", stationDetailRoute);
 app.use("/api/daily-report", dailyReportRoute);
 app.use("/api/detail-sale", detailSaleRoute);
 app.use("/api/fuel-balance" , fuelBalanceRoute)
-
 //Error Routes
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {

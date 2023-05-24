@@ -52,7 +52,7 @@ export const deleteFuelBalance = async (
   }
 };
 
-export const calcFuelBalance = async (query, body, payload) => {
+export const calcFuelBalance = async (query, body, payload: number) => {
   try {
     // await fuelBalanceModel.updateMany(query, body);
     // console.log(query);
@@ -61,15 +61,18 @@ export const calcFuelBalance = async (query, body, payload) => {
     if (result.length == 0) {
       throw new Error("not work");
     }
-    let gg = result.find((ea) => ea["nozzles"].includes(payload.toString()) == true);
-    console.log(gg)
+    let gg = result.find(
+      (ea: { nozzles: string[] }) =>
+        ea["nozzles"].includes(payload.toString()) == true
+    );
+    console.log(gg);
     let cashLiter = gg?.cash + body.liter;
     let obj = {
       cash: cashLiter,
       balance: result[0].opening - cashLiter,
     };
-    await fuelBalanceModel.updateMany({_id : gg?._id}, obj);
-    return await fuelBalanceModel.find({_id : gg?._id}).lean();
+    await fuelBalanceModel.updateMany({ _id: gg?._id }, obj);
+    return await fuelBalanceModel.find({ _id: gg?._id }).lean();
   } catch (e) {
     throw new Error(e);
   }

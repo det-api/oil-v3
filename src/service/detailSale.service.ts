@@ -19,7 +19,7 @@ export const addDetailSale = async (body: detailSaleDocument) => {
     let result = await new detailSaleModel(body).save();
     // console.log(result);
     await calcFuelBalance(
-      { fuelType: result.fuelType },
+      { fuelType: result.fuelType , createAt : result.dailyReportDate},
       { liter: result.saleLiter },
       result.nozzleNo
     );
@@ -76,3 +76,26 @@ export const getDetailSaleByFuelType = async (
     .reduce((pv: number, cv: number): number => pv + cv, 0);
   return { count: fuelLength, liter: fuelLiter, price: fuelAmount };
 };
+
+
+// export const getDetailSaleByDate = async (query: FilterQuery<detailSaleDocument>) => {
+//   try {
+//     let sDate = new Date(query.startDate)
+//     let eDate = new Date(query.endDate)
+
+//     let gg = {
+//       dailyReportDate: {
+//         $gte: ISODate(sDate),
+//         $lte: ISODate(eDate),
+//       },
+//     };
+
+//     return await detailSaleModel
+//       .find(gg)
+//       .lean()
+//       .populate("stationDetailId")
+//       .select("-__v");
+//   } catch (e) {
+//     throw new Error(e);
+//   }
+// };
