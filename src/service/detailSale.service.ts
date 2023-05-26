@@ -16,14 +16,7 @@ export const getDetailSale = async (query: FilterQuery<detailSaleDocument>) => {
 
 export const addDetailSale = async (body: detailSaleDocument) => {
   try {
-    let result = await new detailSaleModel(body).save();
-    // console.log(result);
-    await calcFuelBalance(
-      { fuelType: result.fuelType , createAt : result.dailyReportDate},
-      { liter: result.saleLiter },
-      result.nozzleNo
-    );
-    return result;
+   return await new detailSaleModel(body).save();
   } catch (e) {
     throw new Error(e);
   }

@@ -48,7 +48,7 @@ export const getFuelBalanceHandler = async (
     let prevDate = previous(cDate);
     console.log(prevDate);
     let prevResult = await getFuelBalance({ createAt: prevDate });
-     await Promise.all(
+    await Promise.all(
       prevResult.map(async (ea) => {
         let obj = {
           stationId: "6464e9f1c45b82216ab1db6b",
@@ -59,14 +59,12 @@ export const getFuelBalanceHandler = async (
           nozzles: ea.nozzles,
         } as fuelBalanceDocument;
 
-        // console.log(obj);
-
         await addFuelBalance(obj);
       })
     );
-     
-     let final = await getFuelBalance({ createAt: sDate });
-     fMsg(res , 'fuelBalance created and find' ,final)
+
+    let final = await getFuelBalance({ createAt: sDate });
+    fMsg(res, "fuelBalance created and find", final);
   } catch (e) {
     next(new Error(e));
   }
@@ -109,4 +107,23 @@ export const deleteFuelBalanceHandler = async (
   } catch (e) {
     next(new Error(e));
   }
+};
+
+export const getFuelBalanceByDateHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    let sDate = req.query.sDate?.toLocaleString();
+    let eDate = req.query.eDate?.toLocaleString();
+
+    if (!sDate || !eDate) {
+      throw new Error("you need date");
+    }
+
+    let startDate = new Date(sDate)
+    let endDate = new Date(eDate)
+
+  } catch (e) {}
 };

@@ -1,11 +1,17 @@
 import { Request, Response, NextFunction } from "express";
-import fMsg from "../utils/helper";
+import fMsg, { previous } from "../utils/helper";
 import {
   getDetailSale,
   addDetailSale,
   updateDetailSale,
   deleteDetailSale,
 } from "../service/detailSale.service";
+import {
+  addFuelBalance,
+  calcFuelBalance,
+  getFuelBalance,
+} from "../service/fuelBalance.service";
+import { fuelBalanceDocument } from "../model/fuelBalance.model";
 
 export const getDetailSaleHandler = async (
   req: Request,
@@ -28,11 +34,39 @@ export const addDetailSaleHandler = async (
   try {
     let check = await getDetailSale({ vocono: req.body.vocono });
     //console.log(check);
-    if( check.length != 0){
+    if (check.length != 0) {
       fMsg(res);
       return;
     }
     let result = await addDetailSale(req.body);
+    let checkDate = await getFuelBalance({
+      createAt: req.body.dailyReportDate,
+    });
+    if (checkDate.length == 0) {
+      console.log("wk");
+      let prevDate = previous(new Date(req.body.dailyReportDate));
+      let prevResult = await getFuelBalance({ createAt: prevDate });
+      // console.log(prevResult);
+      let ctd = await Promise.all(
+        prevResult.map(async (ea) => {
+          let obj = {
+            stationId: "6464e9f1c45b82216ab1db6b",
+            fuelType: ea.fuelType,
+            capacity: ea.capacity,
+            opening: ea.balance,
+            createAt: req.body.dailyReportDate,
+            nozzles: ea.nozzles,
+          } as fuelBalanceDocument;
+
+          await addFuelBalance(obj);
+        })
+      );
+    }
+    await calcFuelBalance(
+      { fuelType: result.fuelType, createAt: result.dailyReportDate },
+      { liter: result.saleLiter },
+      result.nozzleNo
+    );
     fMsg(res, "New DetailSale data was added", result);
   } catch (e) {
     next(new Error(e));
